@@ -1,8 +1,8 @@
 import pytest
 from collections import namedtuple
 
-A = 0
-D = 1
+A = 1
+D = 0
 
 class Game:
 
@@ -18,10 +18,7 @@ class Game:
     ]
 
   def cell_should_die(self, cell_coords):
-    # collect neighbours, 
-      # generate coords, map to get cell contents
-    # count the num of alive cells, if num < 2, return true
-    return True
+    return len([ neighbour for neighbour in self.list_neighbours(cell_coords) if neighbour == A ]) < 2
 
   def step(self):
     for y, row in enumerate(self.board):
