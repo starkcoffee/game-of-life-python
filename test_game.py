@@ -27,12 +27,7 @@ class Game:
     return len([ neighbour for neighbour in self.list_neighbours(cell_coords) if neighbour == A ]) < 2
 
   def step(self):
-    cells_to_be_killed = []
-
-    for y, row in enumerate(self.board):
-      for x, cell in enumerate(row):
-        if cell == A and self.cell_should_die((x, y)):
-          cells_to_be_killed.append((x,y))
+    cells_to_be_killed = [(x,y) for y in range(self.num_rows()) for x in range(self.num_cols()) if self.cell_should_die((x,y))]
 
     for x,y in cells_to_be_killed:
       self.board[y][x] = D  
@@ -85,7 +80,10 @@ def test_dead_cell_with_no_neighbours_stays_dead(test_input, expected):
     ([[A],[A]], [[D],[D]]),
     ([[A,A,A]], [[D,A,D]]),
     ([[A],[A],[A]], [[D],[A],[D]]),
+    ([[A, D], [A, A]], [[A, D], [A, A]]), 
+
   ]
 )
 def test_live_cells_with_fewer_than_two_neighbours_die(test_input, expected):
   assert(Game(test_input).step()) == expected
+
