@@ -22,9 +22,11 @@ def test_game_returns_board_after_step():
 @pytest.mark.parametrize(
   "test_input, expected",
   [
-    ([[D]], [[D]])
+    ([[D]], [[D]]),
+    ([[D,D], [D,D]], [[D,D],[D,D]]),
   ]
 )
 def test_dead_cell_with_no_neighbours_stays_dead(test_input, expected):
   assert(Game(test_input).step()) == expected
   
+
