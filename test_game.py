@@ -70,6 +70,9 @@ def test_game_returns_board_after_step():
     ([[D], [A], [D]], (0, 0), [A]),
     ([[D], [A], [D]], (0, 1), [D, D]),
     ([[D], [A], [D]], (0, 2), [A]),
+    ([[D, A], [A, D], [D, D]], (0, 0), [A, A, D]),
+    ([[D, A], [A, D], [D, D]], (0, 1), [D, D, A, D, D]),
+    ([[D, A], [A, D], [D, D]], (1, 1), [D, A, D, A, D]),
   ]
 )
 def test_returns_neighbours(board, cell_coords, expected):
