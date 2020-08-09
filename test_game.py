@@ -29,8 +29,9 @@ class Game:
   def __init__(self, matrix):
     self.board = Board(matrix)
 
-  def list_neighbours(self, x, y):
-    neighbour_coords = [ (x+i, y+j) for i, j in [(-1,-1),(-1,0),(-1,1),(0,-1),(0,1),(1,-1),(1,0),(1,1)] ]
+  def list_neighbour_values(self, x, y):
+    relative_coords = [(-1,-1),(-1,0),(-1,1),(0,-1),(0,1),(1,-1),(1,0),(1,1)] 
+    neighbour_coords = [ (x+i, y+j) for i, j in relative_coords ]
     
     return [ self.board.get(*coord) for coord in neighbour_coords if self.board.within_bounds(*coord) ]
 
@@ -41,7 +42,7 @@ class Game:
     cells_to_be_killed = [ (x,y) 
       for x in range(self.board.x_upper_bound()) 
       for y in range(self.board.y_upper_bound()) 
-      if Game.cell_should_die(self.list_neighbours(x,y))
+      if Game.cell_should_die(self.list_neighbour_values(x,y))
     ]
 
     for x,y in cells_to_be_killed:
@@ -72,7 +73,7 @@ def test_game_returns_board_after_step():
   ]
 )
 def test_returns_neighbours(board, cell_coords, expected):
-  assert(Game(board).list_neighbours(*cell_coords)) == expected
+  assert(Game(board).list_neighbour_values(*cell_coords)) == expected
 
 def test_cell_should_die_if_has_less_than_two_neighbours():
   assert(Game.cell_should_die([])) == True
