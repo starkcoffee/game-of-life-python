@@ -46,6 +46,15 @@ class Game:
 
     return self.board.board_repr
 
+## UNIT TESTS
+
+def test_game_is_initialised_with_board():
+  assert(Game([[]]).board.board_repr) == [[]]
+  
+def test_game_returns_board_after_step():
+  game = Game([[]])
+  assert(game.step()) == [[]]
+
 @pytest.mark.parametrize(
   "board, cell_coords, expected",
   [
@@ -62,17 +71,18 @@ class Game:
 def test_returns_neighbours(board, cell_coords, expected):
   assert(Game(board).list_neighbours(cell_coords)) == expected
 
-def test_cell_should_die_if_has_less_than_two_neighbours():
-  assert(Game([[A, A, A]]).cell_should_die((0,0))) == True
-  assert(Game([[A, A, A]]).cell_should_die((1,0))) == False
-  assert(Game([[A, A, A]]).cell_should_die((2,0))) == True
+@pytest.mark.parametrize(
+  "board, cell_coords, expected",
+  [
+    ([[A, A, A]], (0, 0), True),
+    ([[A, A, A]], (1, 0), False),
+    ([[A, A, A]], (2, 0), True),
+  ]
+)
+def test_cell_should_die_if_has_less_than_two_neighbours(board, cell_coords, expected):
+  assert(Game(board).cell_should_die(cell_coords)) == expected
 
-def test_game_is_initialised_with_board():
-  assert(Game([[]]).board.board_repr) == [[]]
-  
-def test_game_returns_board_after_step():
-  game = Game([[]])
-  assert(game.step()) == [[]]
+## INTEGRATION TESTS
 
 @pytest.mark.parametrize(
   "test_input, expected",
