@@ -36,7 +36,7 @@ class Game:
     return [ self.board.get(*coord) for coord in neighbour_coords if self.board.within_bounds(*coord) ]
 
   def cell_should_die(neighbours):
-    return neighbours.count(A) < 2
+    return neighbours.count(A) < 2 or neighbours.count(A) > 3 
 
   def step(self):
     cells_to_be_killed = [ (x,y) 
@@ -79,21 +79,15 @@ def test_game_returns_board_after_step():
 def test_returns_neighbours(board, cell_coords, expected):
   assert(sorted(Game(board).list_neighbour_values(*cell_coords))) == expected
 
-def test_cell_should_die_if_has_less_than_two_neighbours():
+def test_cell_should_die_if_has_less_than_two_or_greater_than_three_live_neighbours():
   assert(Game.cell_should_die([])) == True
   assert(Game.cell_should_die([A])) == True
-
-@pytest.mark.parametrize(
-  "board, cell_coords, expected",
-  [
-    ([[A, A, A]], (0, 0), True),
-    ([[A, A, A]], (1, 0), False),
-    ([[A, A, A]], (2, 0), True),
-  ]
-)
-@pytest.mark.skip
-def test_cell_should_die_if_has_more_than_three_neighbours(board, cell_coords, expected):
-  assert(Game(board).cell_should_die(cell_coords)) == expected
+  assert(Game.cell_should_die([D,D])) == True
+  assert(Game.cell_should_die([D,A,D])) == True
+  assert(Game.cell_should_die([A,A])) == False
+  assert(Game.cell_should_die([A,A,A])) == False
+  assert(Game.cell_should_die([A,A,A,A])) == True
+  assert(Game.cell_should_die([A,A,A,A,A,D,D,D])) == True
 
 
 ## INTEGRATION TESTS
