@@ -21,6 +21,10 @@ class Board:
   def y_upper_bound(self):
     return len(self.board_repr)
 
+  def within_bounds(self, coord):
+    x,y = coord
+    return x >= 0 and x < self.x_upper_bound() and y >=0 and y < self.y_upper_bound()
+
 class Game:
 
   def __init__(self, matrix):
@@ -30,9 +34,7 @@ class Game:
     x, y = cell_cords
     neighbour_coords = [ (x+i, y+j) for i, j in [(-1,-1),(-1,0),(-1,1),(0,-1),(0,1),(1,-1),(1,0),(1,1)] ]
     
-    return [ self.board.get(i,j) for i,j in neighbour_coords 
-      if i >= 0 and i < self.board.x_upper_bound() and j >=0 and j < self.board.y_upper_bound()
-    ]
+    return [ self.board.get(*coord) for coord in neighbour_coords if self.board.within_bounds(coord) ]
 
   def cell_should_die(neighbours):
     return neighbours.count(A) < 2
