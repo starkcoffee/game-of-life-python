@@ -35,18 +35,20 @@ class Game:
     
     return [ self.board.get(*coord) for coord in neighbour_coords if self.board.within_bounds(*coord) ]
 
-  def cell_should_die(neighbours):
-    return neighbours.count(A) < 2 or neighbours.count(A) > 3 
+  def next_cell_value(cell_value, neighbours):
+    if neighbours.count(A) < 2 or neighbours.count(A) > 3:
+      return D
+    else: 
+      return cell_value
 
   def step(self):
-    cells_to_be_killed = [ (x,y) 
+    next_cell_values = [ (x, y, Game.next_cell_value(self.board.get(x,y), self.list_neighbour_values(x,y))) 
       for x in range(self.board.x_upper_bound()) 
       for y in range(self.board.y_upper_bound()) 
-      if Game.cell_should_die(self.list_neighbour_values(x,y))
     ]
 
-    for x,y in cells_to_be_killed:
-      self.board.set(x,y,D)
+    for x,y,val in next_cell_values:
+      self.board.set(x,y,val)
 
     return self.board.board_repr
 
@@ -76,18 +78,26 @@ def test_game_returns_board_after_step():
     ([[D, A], [A, D], [D, D]], (2, 1), [D, D, A]),
   ]
 )
-def test_returns_neighbours(board, cell_coords, expected):
+def test_list_neighbour_values(board, cell_coords, expected):
   assert(sorted(Game(board).list_neighbour_values(*cell_coords))) == expected
 
-def test_cell_should_die_if_has_less_than_two_or_greater_than_three_live_neighbours():
-  assert(Game.cell_should_die([])) == True
-  assert(Game.cell_should_die([A])) == True
-  assert(Game.cell_should_die([D,D])) == True
-  assert(Game.cell_should_die([D,A,D])) == True
-  assert(Game.cell_should_die([A,A])) == False
-  assert(Game.cell_should_die([A,A,A])) == False
-  assert(Game.cell_should_die([A,A,A,A])) == True
-  assert(Game.cell_should_die([A,A,A,A,A,D,D,D])) == True
+def test_next_cell_value_is_dead_if_a_live_cell_has_less_than_two_or_more_than_three_live_neighbours():
+  assert(Game.next_cell_value(A, [])) == D
+  assert(Game.next_cell_value(A, [A])) == D
+  assert(Game.next_cell_value(A, [D,D])) == D
+  assert(Game.next_cell_value(A, [D,A,D])) == D
+
+def test_next_cell_value_is_alive_if_a_live_cell_has_two_or_three_live_neighbours():
+  assert(Game.next_cell_value(A, [A,A])) == A
+  assert(Game.next_cell_value(A, [A,A,A])) == A
+  assert(Game.next_cell_value(A, [A,A,D])) == A
+  assert(Game.next_cell_value(A, [A,A,A,D,D])) == A
+
+def test_next_cell_value_is_dead_if_a_live_cell_has_more_than_three_live_neighbours():
+  assert(Game.next_cell_value(A, [A,A,A,A])) == D
+  assert(Game.next_cell_value(A, [A,A,A,A,A])) == D
+  assert(Game.next_cell_value(A, [A,A,A,A,D])) == D
+  assert(Game.next_cell_value(A, [A,A,A,A,A,D,D])) == D
 
 
 ## INTEGRATION TESTS
