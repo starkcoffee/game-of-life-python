@@ -36,8 +36,10 @@ class Game:
     return [ self.board.get(*coord) for coord in neighbour_coords if self.board.within_bounds(*coord) ]
 
   def next_cell_value(cell_value, neighbours):
-    if neighbours.count(A) < 2 or neighbours.count(A) > 3:
+    if cell_value == A and neighbours.count(A) < 2 or neighbours.count(A) > 3:
       return D
+    elif cell_value == D and neighbours.count(A) == 3:
+      return A
     else: 
       return cell_value
 
@@ -99,31 +101,43 @@ def test_next_cell_value_is_dead_if_a_live_cell_has_more_than_three_live_neighbo
   assert(Game.next_cell_value(A, [A,A,A,A,D])) == D
   assert(Game.next_cell_value(A, [A,A,A,A,A,D,D])) == D
 
+def test_next_cell_value_is_dead_if_a_live_cell_was_dead():
+  assert(Game.next_cell_value(D, [])) == D
+  assert(Game.next_cell_value(D, [A,D,A,D])) == D
+
+def test_next_cell_value_is_alive_if_a_dead_cell_has_exactly_three_live_neighbours():
+  assert(Game.next_cell_value(D, [A,A])) == D
+  assert(Game.next_cell_value(D, [A,A,A])) == A
+  assert(Game.next_cell_value(D, [A,A,A,A])) == D
 
 ## INTEGRATION TESTS
 
 @pytest.mark.parametrize(
   "test_input, expected",
   [
-    ([[D]], [[D]]),
-    ([[D,D], [D,D]], [[D,D],[D,D]]),
-  ]
-)
-def test_dead_cell_with_no_neighbours_stays_dead(test_input, expected):
-  assert(Game(test_input).step()) == expected
-  
-@pytest.mark.parametrize(
-  "test_input, expected",
-  [
     ([[A]], [[D]]),
-    ([[A,A]], [[D, D]]),
+    ([[A, A]], [[D, D]]),
     ([[A],[A]], [[D],[D]]),
-    ([[A,A,A]], [[D,A,D]]),
-    ([[A],[A],[A]], [[D],[A],[D]]),
-    ([[A, D], [A, A]], [[A, D], [A, A]]), 
-
+    ([[A, D], 
+      [A, A]], 
+      [
+      [A, A], 
+      [A, A]
+    ]), 
+    ([
+      [A,A,D,D,A,A,D],
+      [A,A,D,A,A,A,A],
+      [D,D,A,D,D,A,D],
+      [A,D,D,D,D,D,D]],
+      [
+      [A,A,A,A,D,D,A],
+      [A,D,D,A,D,D,A],
+      [A,D,A,A,D,A,A],
+      [D,D,D,D,D,D,D]
+    ]) 
   ]
 )
-def test_live_cells_with_fewer_than_two_neighbours_die(test_input, expected):
+def test_step(test_input, expected):
   assert(Game(test_input).step()) == expected
+
 
